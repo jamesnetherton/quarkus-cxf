@@ -8,15 +8,11 @@ import org.apache.cxf.service.model.EndpointInfo;
 import org.apache.cxf.transport.Destination;
 import org.apache.cxf.transport.DestinationFactory;
 import org.apache.cxf.transport.http.AbstractHTTPDestination;
-import org.apache.cxf.transport.http.DestinationRegistry;
 
 public class VertxDestinationFactory extends SoapTransportFactory implements DestinationFactory {
 
-    protected final DestinationRegistry registry;
-
-    protected VertxDestinationFactory(DestinationRegistry registry) {
+    public VertxDestinationFactory() {
         super();
-        this.registry = registry;
     }
 
     @Override
@@ -24,11 +20,11 @@ public class VertxDestinationFactory extends SoapTransportFactory implements Des
         if (endpointInfo == null) {
             throw new IllegalArgumentException("EndpointInfo cannot be null");
         }
-        synchronized (registry) {
-            AbstractHTTPDestination d = registry.getDestinationForPath(endpointInfo.getAddress());
+        synchronized (DestinationRegistryFactory.INSTANCE) {
+            AbstractHTTPDestination d = DestinationRegistryFactory.INSTANCE.getDestinationForPath(endpointInfo.getAddress());
             if (d == null) {
-                d = new VertxDestination(endpointInfo, bus, registry);
-                registry.addDestination(d);
+                d = new VertxDestination(endpointInfo, bus, DestinationRegistryFactory.INSTANCE);
+                DestinationRegistryFactory.INSTANCE.addDestination(d);
                 d.finalizeConfig();
             }
             return d;

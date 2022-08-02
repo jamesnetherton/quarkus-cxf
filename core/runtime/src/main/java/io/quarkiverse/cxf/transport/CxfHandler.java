@@ -24,7 +24,6 @@ import org.apache.cxf.message.Message;
 import org.apache.cxf.transport.ConduitInitiatorManager;
 import org.apache.cxf.transport.DestinationFactoryManager;
 import org.apache.cxf.transport.http.DestinationRegistry;
-import org.apache.cxf.transport.http.DestinationRegistryImpl;
 import org.apache.cxf.transport.servlet.ServletController;
 import org.apache.cxf.transport.servlet.servicelist.ServiceListGeneratorServlet;
 import org.jboss.logging.Logger;
@@ -82,8 +81,8 @@ public class CxfHandler implements Handler<RoutingContext> {
 
         LOGGER.trace("load destination");
         DestinationFactoryManager dfm = this.bus.getExtension(DestinationFactoryManager.class);
-        destinationRegistry = new DestinationRegistryImpl();
-        VertxDestinationFactory destinationFactory = new VertxDestinationFactory(destinationRegistry);
+        VertxDestinationFactory destinationFactory = new VertxDestinationFactory();
+        destinationRegistry = DestinationRegistryFactory.INSTANCE;
         dfm.registerDestinationFactory("http://cxf.apache.org/transports/quarkus", destinationFactory);
         ConduitInitiatorManager extension = bus.getExtension(ConduitInitiatorManager.class);
         extension.registerConduitInitiator("http://cxf.apache.org/transports/quarkus", destinationFactory);
